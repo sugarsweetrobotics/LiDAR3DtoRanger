@@ -26,12 +26,15 @@ static const char* lidar3dtoranger_spec[] =
     "lang_type",         "compile",
     // Configuration variables
     "conf.default.debug_level", "0",
+    "conf.default.selct_vertical_index", "8",
 
     // Widget
     "conf.__widget__.debug_level", "text",
+    "conf.__widget__.selct_vertical_index", "text",
     // Constraints
 
     "conf.__type__.debug_level", "short",
+    "conf.__type__.selct_vertical_index", "short",
 
     ""
   };
@@ -81,6 +84,7 @@ RTC::ReturnCode_t LiDAR3DtoRanger::onInitialize()
   // <rtc-template block="bind_config">
   // Bind variables and configuration variable
   bindParameter("debug_level", m_debug_level, "0");
+  bindParameter("selct_vertical_index", m_selct_vertical_index, "8");
   // </rtc-template>
 
   return RTC::RTC_OK;
@@ -122,6 +126,29 @@ RTC::ReturnCode_t LiDAR3DtoRanger::onDeactivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t LiDAR3DtoRanger::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_range3dIn.isNew()) {
+    m_range3dIn.read();
+
+    if (m_range3d.frames.length() != m_range2d.ranges.length()) {
+      m_range2d.ranges.length(m_range3d.frames.length());
+      m_range2d.geometry.geometry = m_range3d.geometry;
+      m_range2d.config.minAngle = m_range3d.config.minAzimuthAngle;
+      m_range2d.config.maxAngle = m_range3d.config.maxAzimuthAngle;
+      m_range2d.config.angularRes = m_range3d.config.azimuthAngularRes;
+      m_range2d.config.minRange = m_range3d.config.minRange;
+      m_range2d.config.maxRange = m_range3d.config.maxRange;
+      m_range2d.config.rangeRes = m_range3d.config.rangeRes;
+      m_range2d.config.frequency = m_range3d.config.frequency;
+    }
+
+    for(int i = 0;i < m_range3d.frames.length();i++) {
+      m_range2d.ranges[i] = m_range3d.frames[i].ranges[m_selct_vertical_index];
+    }
+    
+    m_range2d.tm.sec = m_range3d.tm.sec;
+    m_range2d.tm.nsec = m_range3d.tm.nsec;
+    m_range2dOut.write();
+  }
   return RTC::RTC_OK;
 }
 

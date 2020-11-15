@@ -219,6 +219,12 @@ class LiDAR3DtoRanger
    */
   short int m_debug_level;
 
+  /*!
+   * 
+   * - Name:  debug_level
+   * - DefaultValue: 0
+   */
+  short int m_selct_vertical_index;
   // </rtc-template>
 
   // DataInPort declaration
