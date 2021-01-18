@@ -218,6 +218,18 @@ class LiDAR3DtoRanger
    * - DefaultValue: 0
    */
   short int m_debug_level;
+  /*!
+   *
+   * - Name:  skip_count
+   * - DefaultValue: 0
+   */
+  short int m_skip_count;
+  /*!
+   *
+   * - Name:  rotate_invertion
+   * - DefaultValue: true
+   */
+  std::string m_rotate_invertion;
 
   /*!
    * 
